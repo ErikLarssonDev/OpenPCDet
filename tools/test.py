@@ -33,7 +33,7 @@ def parse_config():
     parser.add_argument('--set', dest='set_cfgs', default=None, nargs=argparse.REMAINDER,
                         help='set extra config keys if needed')
 
-    parser.add_argument('--max_waiting_mins', type=int, default=30, help='max waiting minutes')
+    parser.add_argument('--max_waiting_mins', type=int, default=0, help='max waiting minutes')
     parser.add_argument('--start_epoch', type=int, default=0, help='')
     parser.add_argument('--eval_tag', type=str, default='default', help='eval tag for this experiment')
     parser.add_argument('--eval_all', action='store_true', default=False, help='whether to evaluate all checkpoints')
@@ -102,16 +102,21 @@ def repeat_eval_ckpt(model, test_loader, args, eval_output_dir, logger, ckpt_dir
         # check whether there is checkpoint which is not evaluated
         cur_epoch_id, cur_ckpt = get_no_evaluated_ckpt(ckpt_dir, ckpt_record_file, args)
         if cur_epoch_id == -1 or int(float(cur_epoch_id)) < args.start_epoch:
-            wait_second = 30
+            wait_second = 0
             if cfg.LOCAL_RANK == 0:
+                print(f"Waiting for {args.max_waiting_mins} minutes for new checkpoint...")
+                print(f"cur_epoch_id: {cur_epoch_id}, cur_ckpt: {cur_ckpt}")
+                print(f"total_time: {total_time}, first_eval: {first_eval}")
+                print(f"local_rank: {cfg.LOCAL_RANK}")
                 print('Wait %s seconds for next check (progress: %.1f / %d minutes): %s \r'
                       % (wait_second, total_time * 1.0 / 60, args.max_waiting_mins, ckpt_dir), end='', flush=True)
             time.sleep(wait_second)
             total_time += 30
+            print("cur_epoch_id: ", cur_epoch_id)
             if total_time > args.max_waiting_mins * 60 and (first_eval is False):
                 break
+            break # TODO: Adding this for now to avoid endless loop
             continue
-
         total_time = 0
         first_eval = False
 

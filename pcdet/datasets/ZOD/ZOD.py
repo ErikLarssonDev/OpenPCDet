@@ -155,7 +155,8 @@ class ZOD(DatasetTemplate):
         return data_dict
     
     def evaluation(self, det_annos, class_names, **kwargs):
-        pass
+        """Only a placeholder for now."""
+        return "", {}
 
 
 def zod_coordinate_system_to_uniform_coordinate_system(zod_box3d):
