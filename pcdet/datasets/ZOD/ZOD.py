@@ -156,6 +156,10 @@ class ZOD(DatasetTemplate):
     
     def evaluation(self, det_annos, class_names, **kwargs):
         """Only a placeholder for now."""
+        # print("Placeholder for evaluation")
+        # print(f"det_annos: {det_annos}")
+        # print(f"class_names: {class_names}")
+        # print(f"kwargs: {kwargs}")
         return "", {}
 
 
